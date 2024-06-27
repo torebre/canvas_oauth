@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,7 +43,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain loginEndpoint(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests((requests) ->
-                        requests.requestMatchers("/login")
+                        requests.requestMatchers("/login/**", "/response")
                                 .permitAll())
                 .build();
     }
@@ -71,12 +72,17 @@ public class SecurityConfig {
         return ClientRegistration.withRegistrationId("canvas")
                 .clientId(clientId)
                 .clientSecret(clientKey)
-                // TODO Is this the correct grant type?
+//                .scope("/auth/userinfo")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationUri(authorizationUri)
                 .tokenUri(tokenUri)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .redirectUri(redirectUri)
+//                .redirectUri(redirectUri)
+                .redirectUri("{baseUrl}" +OAuth2LoginAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI)
+                // TODO Hardcoded for debugging purposes
+                .userInfoUri("http://localhost:8080/login/oauth2/token/auth/userinfo")
+//                .userInfoUri("http://localhost:8080/auth/userinfo")
+                .userNameAttributeName("user")
                 .build();
     }
 
