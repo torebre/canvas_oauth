@@ -11,6 +11,13 @@ import org.springframework.web.client.RestClient;
 @Controller
 public class TestApiController {
 
+
+    /**
+     * <a href="https://docs.spring.io/spring-security/reference/reactive/oauth2/client/authorized-clients.html#oauth2Client-registered-authorized-client">Resolving an Authorized Client</a>
+     *
+     * @param oAuth2AuthorizedClient
+     * @return
+     */
     @GetMapping("/callapi")
     public ResponseEntity<String> callApi(@RegisteredOAuth2AuthorizedClient("canvas") OAuth2AuthorizedClient oAuth2AuthorizedClient) {
         RestClient client = RestClient.create();

@@ -57,6 +57,18 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-actuator</artifactId>-->
+<!--		</dependency>-->
+
+<!-- Only installed in local Maven repository -->
+
+<!--		<dependency>-->
+<!--			<groupId>org.openapitools</groupId>-->
+<!--			<artifactId>openapi-java-client</artifactId>-->
+<!--			<version>1.0</version>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>

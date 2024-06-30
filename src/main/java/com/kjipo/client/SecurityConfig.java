@@ -5,27 +5,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Configuration
@@ -92,29 +85,43 @@ public class SecurityConfig {
 
 
     private OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
+        return userRequest -> {
+            Map<String, Object> attributes = new HashMap<>();
 
-        // TODO Fill in proper values for user
-
-        return new OAuth2UserService<OAuth2UserRequest, OAuth2User>() {
-            @Override
-            public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-                return new OAuth2User() {
-                    @Override
-                    public Map<String, Object> getAttributes() {
-                        return Map.of("username", "Test user");
-                    }
-
-                    @Override
-                    public Collection<? extends GrantedAuthority> getAuthorities() {
-                        return List.of();
-                    }
-
-                    @Override
-                    public String getName() {
-                        return "Test";
-                    }
-                };
+            Map<String, Object> additionalParameters = userRequest.getAdditionalParameters();
+            if (additionalParameters.containsKey("user")) {
+                Map<String, Object> userAttributes = (Map<String, Object>) additionalParameters.get("user");
+                if (userAttributes.containsKey("id")) {
+                    attributes.put("id", userAttributes.get("id"));
+                }
+                if (userAttributes.containsKey("name")) {
+                    attributes.put("name", userAttributes.get("name"));
+                }
+                if (userAttributes.containsKey("global_id")) {
+                    attributes.put("global_id", userAttributes.get("global_id"));
+                }
+                if (userAttributes.containsKey("effective_locale")) {
+                    attributes.put("effective_locale", userAttributes.get("effective_locale"));
+                }
             }
+
+            return new OAuth2User() {
+
+                @Override
+                public Map<String, Object> getAttributes() {
+                    return attributes;
+                }
+
+                @Override
+                public Collection<? extends GrantedAuthority> getAuthorities() {
+                    return List.of();
+                }
+
+                @Override
+                public String getName() {
+                    return (String) attributes.get("name");
+                }
+            };
         };
     }
 
