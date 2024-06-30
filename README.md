@@ -1,3 +1,5 @@
+# Using OAuth2 authorization with Canvas LMS
+This repository contains an example showing how to use OAuth2 to authorize an application to make calls to the Canvas API on behalf of a user. 
 
 Tutorial about Spring and OAuth2
 https://spring.io/guides/tutorials/spring-boot-oauth2
